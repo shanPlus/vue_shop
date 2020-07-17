@@ -46,6 +46,7 @@ export default {
             // 登录成功
             // 将服务器发送到客户端的token保存下来, 保存到sessionStorage中
             window.sessionStorage.setItem('token', res.data.token)
+            window.sessionStorage.setItem('User', this.loginData.username)
             // 页面跳转
             this.$router.push('/home')
           }

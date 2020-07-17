@@ -1,0 +1,65 @@
+{
+  "id": "1949190",
+  "name": "vue_shop",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "3931830",
+      "name": "导航展开",
+      "font_class": "daohangzhankai",
+      "unicode": "e96b",
+      "unicode_decimal": 59755
+    },
+    {
+      "icon_id": "6503205",
+      "name": "导航折叠",
+      "font_class": "daohangzhedie",
+      "unicode": "e64c",
+      "unicode_decimal": 58956
+    },
+    {
+      "icon_id": "1138897",
+      "name": "商品",
+      "font_class": "shangpin-copy",
+      "unicode": "e602",
+      "unicode_decimal": 58882
+    },
+    {
+      "icon_id": "4563779",
+      "name": "数据面板",
+      "font_class": "shujumianban",
+      "unicode": "e608",
+      "unicode_decimal": 58888
+    },
+    {
+      "icon_id": "5049883",
+      "name": "权限",
+      "font_class": "weibiaoti-",
+      "unicode": "e65a",
+      "unicode_decimal": 58970
+    },
+    {
+      "icon_id": "6849482",
+      "name": "用户",
+      "font_class": "yonghu",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
+    {
+      "icon_id": "10993486",
+      "name": "订单",
+      "font_class": "icon-order",
+      "unicode": "e601",
+      "unicode_decimal": 58881
+    },
+    {
+      "icon_id": "3547182",
+      "name": "退出",
+      "font_class": "tuichu",
+      "unicode": "e676",
+      "unicode_decimal": 58998
+    }
+  ]
+}
