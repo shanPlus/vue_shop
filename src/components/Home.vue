@@ -27,6 +27,7 @@
           | | |
         </div>
         <!-- 侧边栏区域 -->
+          <!-- :router="true" 开启路由模式, 以index为路由链接-->
         <el-menu
           :collapse = "isCollapse"
           unique-opened
@@ -87,6 +88,7 @@ export default {
     this.User = window.sessionStorage.getItem('User')
     this.getMenuList()
   },
+  // 侧边栏展开与折叠
   beforeUpdate () {
     // 保存链接的激活状态
     this.activePath = this.$route.path

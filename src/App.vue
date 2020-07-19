@@ -38,4 +38,13 @@ img {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+/* 面包屑导航 */
+.el-breadcrumb {
+  font-size: 12px;
+  margin-bottom: 20px;
+}
+/*  卡片视图 */
+.el-card {
+  min-width: 900px;
+}
 </style>

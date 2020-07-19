@@ -40,8 +40,8 @@
             <el-tooltip content="删除" placement="top" :enterable="false">
               <el-button type="danger" icon="el-icon-delete" size="mini" @click="showDelDialog(scope.row.id)"></el-button>
             </el-tooltip>
-            <el-tooltip content="设置" placement="top" :enterable="false">
-              <el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
+            <el-tooltip content="分配角色" placement="top" :enterable="false">
+              <el-button type="warning" icon="el-icon-setting" size="mini" @click="showSetDialog(scope.row)"></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -100,8 +100,31 @@
     <el-dialog title="删除用户" :visible.sync="delDialogVisible"  >
       <span>请输入 <span class="delFont">{{delUserInfo.username}}</span>,然后确认删除</span>
       <el-input v-model="delUserData" class="delInput" placeholder="请输入上面红色的字体用户名"></el-input>
-      <el-button @click="delDialogVisible = false">取 消</el-button>
-      <el-button type="primary" @click="delUserSubmit">确 定</el-button>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="delDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="delUserSubmit">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-- 设置分配角色弹出框 -->
+    <el-dialog title="分配角色" :visible.sync="setDialogVisible"  @close="setHandleClose">
+      <div>
+        <p>当前用户：{{userinfo.username}}</p>
+        <p>当前角色：{{userinfo.role_name}}</p>
+        <p>分配角色：
+          <el-select v-model="selectedRoleId" placeholder="请选择">
+            <el-option
+              v-for="item in rolesList"
+              :key="item.id"
+              :label="item.roleName"
+              :value="item.id">
+            </el-option>
+          </el-select>
+        </p>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="setDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="setUserSubmit">确 定</el-button>
+      </span>
     </el-dialog>
   </div>
 </template>
@@ -145,6 +168,8 @@ export default {
       editDialogVisible: false,
       // 删除用户弹窗
       delDialogVisible: false,
+      // 分配角色用户弹窗
+      setDialogVisible: false,
       // 添加用户的信息
       addUserInfo: {
         username: '',
@@ -158,6 +183,12 @@ export default {
       delUserInfo: {},
       // 删除输入框 中的内容
       delUserData: '',
+      // 分配角色信息存储
+      userinfo: '',
+      // 角色列表信息
+      rolesList: [],
+      // 已选中的角色ID值
+      selectedRoleId: '',
       // 添加用户的校验规则
       addFormRules: {
         username: [
@@ -190,10 +221,18 @@ export default {
       }
     }
   },
+  /**
+   * 实例已经在内存中创建OK,此时data和methods已经被创建成功，此时还没有编译template
+   */
   created () {
     this.getUserList()
   },
   methods: {
+    /**
+     * 获取所有用户名与数据
+     *
+     * @returns {Promise<ElMessageComponent>}
+     */
     async getUserList () {
       const { data: res } = await this.$http.get('users', { params: this.queryInfo })
       if (res.meta.status !== 200) {
@@ -203,19 +242,32 @@ export default {
       this.total = res.data.total
       // console.log(this.tableData)
     },
-    // 每页显示多少条数据被改变就会触发
+    /**
+     * 当每页显示多少条数据被更改就会被触发
+     *
+     * @param newSize
+     */
     handleSizeChange (newSize) {
       this.queryInfo.pagesize = newSize
       this.getUserList()
     },
-    // 页码值发生变化, 就会触发
+    /**
+     * 当前的页码值页改变就会被触发
+     *
+     * @param newNum
+     */
     handleCurrentChange (newNum) {
       this.queryInfo.pagenum = newNum
       this.getUserList()
     },
-    // 更改用户状态
+    /**
+     * 监听用户状态被改变
+     *
+     * @param data 当前用户的所有数据
+     * @returns {Promise<ElMessageComponent>}
+     */
     async userStateChange (data) {
-      console.log(data)
+      // console.log(data)
       const { data: res } = await this.$http.put(`users/${data.id}/state/${data.mg_state}`)
       console.log(res)
       if (res.meta.status !== 200) {
@@ -224,11 +276,19 @@ export default {
       }
       this.$message.success('更新用户状态成功')
     },
-    // 监听弹出添加表单对话框的关闭
+    /**
+     * 监听添加用户弹框被关闭，然后初始化弹框表单
+     *
+     * @constructor
+     */
     AddHandleClose () {
       this.$refs.addFormRef.resetFields()
     },
-    // 用户提交
+    /**
+     * 监听添加用户弹框被点击确定， 添加用户
+     *
+     * @constructor
+     */
     AddUserSubmit () {
       // 表单预验证
       this.$refs.addFormRef.validate(async valid => {
@@ -244,7 +304,12 @@ export default {
         return this.$message.error(res.meta.msg)
       })
     },
-    // 修改用户的按钮被触发
+    /**
+     * 修改按钮被触发, 根据用户id查询当前用户的信息
+     *
+     * @param id  当前被点击编辑的用户id
+     * @returns {Promise<ElMessageComponent>}
+     */
     async showEditDialog (id) {
       console.log(id)
       const { data: res } = await this.$http.get('users/' + id)
@@ -253,6 +318,12 @@ export default {
       this.editUserInfo = res.data
       this.editDialogVisible = true
     },
+    /**
+     * 编辑按钮弹框被提交
+     *  1. 预验证
+     *  2. 发请求
+     *  3. 关闭弹框， 更新数据， 提示用户
+     */
     editUserSubmit () {
       this.$refs.editFormRef.validate(async valid => {
         if (!valid) return
@@ -266,16 +337,29 @@ export default {
         return this.$message.success(res.meta.msg)
       })
     },
+    /**
+     * 编辑按钮弹窗被关闭，初始化弹窗的内容
+     */
     editHandleClose () {
       this.$refs.editFormRef.resetFields()
     },
-    // 删除用户的按钮被触发
+    /**
+     * 根据当前用户的id查询给用户的信息，并弹框
+     *
+     * @param id  获取当前用户的id值
+     * @returns {Promise<void>}
+     */
     async showDelDialog (id) {
       // 查询的点击用户
       const { data: res } = await this.$http.get('users/' + id)
       this.delUserInfo = res.data
       this.delDialogVisible = true
     },
+    /**
+     * 用户表单输入该用户名提交就可以删除当前的用户
+     *
+     * @returns {Promise<ElMessageComponent>}
+     */
     async delUserSubmit () {
       if (this.delUserData !== this.delUserInfo.username) {
         this.delUserData = ''
@@ -292,29 +376,56 @@ export default {
       this.getUserList()
       this.delDialogVisible = false
       return this.$message.success('删除用户成功')
+    },
+    /**
+     * 点击设置按钮，弹出分配角色弹出框
+     *
+     * @param {number} userinfo 当前被点击的用户的信息
+     * @returns {Promise<void>}
+     */
+    async showSetDialog (userinfo) {
+      this.userinfo = userinfo
+      // 获取角色列表
+      const { data: res } = await this.$http.get('roles')
+      if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
+      this.rolesList = res.data
+      console.log(this.rolesList)
+      this.setDialogVisible = true
+    },
+    /**
+     * 分配角色弹框，被确定了，那么就把下拉框里面的角色保存到当前用户信息中
+     */
+    async setUserSubmit () {
+      if (!this.selectedRoleId) {
+        return this.$message.error('请选择要分配的角色')
+      }
+      const { data: res } = await this.$http.put(`users/${this.userinfo.id}/role`, { rid: this.selectedRoleId })
+      if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
+      this.$message.success('更新角色成功')
+      this.getUserList()
+      this.setDialogVisible = false
+    },
+    /**
+     * 监听分配角色弹框被关闭
+     */
+    setHandleClose () {
+      // 清空 下拉框上一次的内容
+      this.selectedRoleId = ''
+      // 清空 分配角色弹框的内容
+      this.userinfo = {}
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.el-breadcrumb {
-  font-size: 12px;
-  margin-bottom: 20px;
+.el-pagination {
+  margin-top: 20px;
 }
-.el-card {
-  min-width: 900px;
-  .el-table {
-    margin-top: 20px;
-  }
-  .el-pagination {
-    margin-top: 20px;
-  }
-  .input-with-select {
-    max-width: 300px;
-    min-width: 200px;
-    width: 40%;
-  }
+.input-with-select {
+  max-width: 300px;
+  min-width: 200px;
+  width: 40%;
 }
 .delInput {
   margin-top: 20px;
@@ -328,5 +439,8 @@ export default {
 }
 .addUser {
   float: right;
+}
+.el-dialog div p {
+  margin-bottom: 10px;
 }
 </style>
