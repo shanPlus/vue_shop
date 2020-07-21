@@ -245,7 +245,7 @@ export default {
     /**
      * 当每页显示多少条数据被更改就会被触发
      *
-     * @param newSize
+     * @param newSize  最新的每页显示多少条数据
      */
     handleSizeChange (newSize) {
       this.queryInfo.pagesize = newSize
@@ -254,7 +254,7 @@ export default {
     /**
      * 当前的页码值页改变就会被触发
      *
-     * @param newNum
+     * @param newNum  最新页码值
      */
     handleCurrentChange (newNum) {
       this.queryInfo.pagenum = newNum

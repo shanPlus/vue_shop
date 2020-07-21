@@ -47,4 +47,15 @@ img {
 .el-card {
   min-width: 900px;
 }
+section {
+  overflow: hidden;
+}
+.el-main {
+  overflow-x: hidden;
+  overflow-y: scroll;
+  margin-right: -17px;
+}
+.el-cascader-panel {
+  height: 30vh;
+}
 </style>

@@ -160,6 +160,8 @@ export default {
     width: 100%;
     height: 100%;
     border: none;
+    padding-right: 20px;
+    overflow-y: auto;
     .el-submenu {
       border-left: 5px solid deepskyblue;
       border-top: 5px solid transparent;

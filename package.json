@@ -15,6 +15,7 @@
     "element-ui": "^2.13.2",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
+    "vue-table-with-tree-grid": "^0.2.4",
     "webpack": "^4.43.0"
   },
   "devDependencies": {
@@ -49,7 +50,10 @@
       "ecmaVersion": 2019
     },
     "rules": {
-      "quotes": [1, "single"]
+      "quotes": [
+        1,
+        "single"
+      ]
     }
   },
   "browserslist": [
