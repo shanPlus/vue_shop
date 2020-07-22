@@ -51,9 +51,11 @@ section {
   overflow: hidden;
 }
 .el-main {
-  overflow-x: hidden;
-  overflow-y: scroll;
-  margin-right: -17px;
+  overflow: hidden;
+}
+.el-scrollbar__wrap {
+  overflow-y: auto!important;
+  overflow-x: hidden!important;
 }
 .el-cascader-panel {
   height: 30vh;

@@ -1,92 +1,92 @@
 <template>
   <div>
-    <!-- 面包屑导航 -->
-    <el-breadcrumb separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item>首页</el-breadcrumb-item>
-      <el-breadcrumb-item>商品管理</el-breadcrumb-item>
-      <el-breadcrumb-item>商品分类</el-breadcrumb-item>
-    </el-breadcrumb>
+      <!-- 面包屑导航 -->
+      <el-breadcrumb separator-class="el-icon-arrow-right">
+        <el-breadcrumb-item>首页</el-breadcrumb-item>
+        <el-breadcrumb-item>商品管理</el-breadcrumb-item>
+        <el-breadcrumb-item>商品分类</el-breadcrumb-item>
+      </el-breadcrumb>
 
-    <!-- 卡片视图区域-->
-    <el-card>
-      <!-- 添加分类 -->
-      <el-button type="primary" plain @click="showAddCateDialog">添加分类</el-button>
-      <!-- 表格区域 -->
-      <zk-table
-        :data="catelist"
-        :columns="columns"
-        :selection-type="false"
-        :expand-type="false"
-        max-height="60"
-        index-text="#"
-        show-index
-        strope
-        border>
-        <!-- 是否有效 -->
-        <template v-slot:isok="scope">
-          <i
-            class="el-icon-success"
-            v-if="scope.row.cat_deleted===true"
-            style="color: #409EFF"></i>
-          <i
-            class="el-icon-error"
-            v-else-if="scope.row.cat_deleted === false"
-            style="color: #F56C6C"></i>
-        </template>
-        <!-- 排序一列 -->
-        <template v-slot:order="scope">
-          <el-tag type="success" v-if="scope.row.cat_level === 0">一级</el-tag>
-          <el-tag type="success" v-else-if="scope.row.cat_level === 1">二级</el-tag>
-          <el-tag type="warning" v-else-if="scope.row.cat_level === 2">三级</el-tag>
-        </template>
-        <!-- 操作一列 -->
-        <template v-slot:opt>
-          <el-button type="primary" icon="el-icon-edit" size="mini">编辑</el-button>
-          <el-button type="danger" icon="el-icon-search" size="mini">删除</el-button>
-        </template>
-      </zk-table>
-      <!-- 分页 -->
-      <el-pagination
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page="queryinfo.pagenum"
-        :page-sizes="[1, 5, 10, 20]"
-        :page-size="queryinfo.pagesize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="total">
-      </el-pagination>
-    </el-card>
-    <!-- 添加分类弹框 -->
-    <el-dialog
-      title="添加分类"
-      :visible.sync="showCateDialogVisible"
-      @close="addCateDialogClosed">
-      <el-form :model="addCateForm" :rules="addCateFormRules" ref="AddCateFormRes">
-        <el-form-item label="添加分类" prop="cat_name">
-          <el-input v-model="addCateForm.cat_name"></el-input>
-        </el-form-item>
-        <el-form-item label="父级分类">
-          <!-- option: 数据源 -->
-          <!-- expandTrigger: hover鼠标滑过触发-->
-          <el-cascader
-            clearable
-            :options="parentCateList"
-            :props = "{
-              expandTrigger: 'hover',
-              value: 'cat_id',
-              label: 'cat_name',
-              children: 'children',
-              checkStrictly: true}"
-            v-model="selectedKeys"
-            @change="parentCateChanged">
-          </el-cascader>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="showCateDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="showCateDialog">确 定</el-button>
-      </span>
-    </el-dialog>
+      <!-- 卡片视图区域-->
+      <el-card>
+        <!-- 添加分类 -->
+        <el-button type="primary" plain @click="showAddCateDialog">添加分类</el-button>
+        <!-- 表格区域 -->
+        <zk-table
+          :data="catelist"
+          :columns="columns"
+          :selection-type="false"
+          :expand-type="false"
+          max-height="60"
+          index-text="#"
+          show-index
+          strope
+          border>
+          <!-- 是否有效 -->
+          <template v-slot:isok="scope">
+            <i
+              class="el-icon-success"
+              v-if="scope.row.cat_deleted===true"
+              style="color: #409EFF"></i>
+            <i
+              class="el-icon-error"
+              v-else-if="scope.row.cat_deleted === false"
+              style="color: #F56C6C"></i>
+          </template>
+          <!-- 排序一列 -->
+          <template v-slot:order="scope">
+            <el-tag type="success" v-if="scope.row.cat_level === 0">一级</el-tag>
+            <el-tag type="success" v-else-if="scope.row.cat_level === 1">二级</el-tag>
+            <el-tag type="warning" v-else-if="scope.row.cat_level === 2">三级</el-tag>
+          </template>
+          <!-- 操作一列 -->
+          <template v-slot:opt>
+            <el-button type="primary" icon="el-icon-edit" size="mini">编辑</el-button>
+            <el-button type="danger" icon="el-icon-search" size="mini">删除</el-button>
+          </template>
+        </zk-table>
+        <!-- 分页 -->
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="queryinfo.pagenum"
+          :page-sizes="[1, 5, 10, 20]"
+          :page-size="queryinfo.pagesize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total">
+        </el-pagination>
+      </el-card>
+      <!-- 添加分类弹框 -->
+      <el-dialog
+        title="添加分类"
+        :visible.sync="showCateDialogVisible"
+        @close="addCateDialogClosed">
+        <el-form :model="addCateForm" :rules="addCateFormRules" ref="AddCateFormRes">
+          <el-form-item label="添加分类" prop="cat_name">
+            <el-input v-model="addCateForm.cat_name"></el-input>
+          </el-form-item>
+          <el-form-item label="父级分类">
+            <!-- option: 数据源 -->
+            <!-- expandTrigger: hover鼠标滑过触发-->
+            <el-cascader
+              clearable
+              :options="parentCateList"
+              :props = "{
+                expandTrigger: 'hover',
+                value: 'cat_id',
+                label: 'cat_name',
+                children: 'children',
+                checkStrictly: true}"
+              v-model="selectedKeys"
+              @change="parentCateChanged">
+            </el-cascader>
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="showCateDialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="showCateDialog">确 定</el-button>
+        </span>
+      </el-dialog>
   </div>
 </template>
 
@@ -279,5 +279,4 @@ export default {
 .el-cascader {
   width: 100%;
 }
-
 </style>

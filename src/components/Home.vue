@@ -28,6 +28,7 @@
         </div>
         <!-- 侧边栏区域 -->
           <!-- :router="true" 开启路由模式, 以index为路由链接-->
+        <el-scrollbar>
         <el-menu
           :collapse = "isCollapse"
           unique-opened
@@ -56,9 +57,13 @@
             </el-menu-item>
           </el-submenu>
         </el-menu>
+        </el-scrollbar>
       </el-aside>
       <el-main>
+        <!-- wrap-class: wrap的样式名, view-class: view的样式名-->
+        <el-scrollbar>
         <router-view></router-view>
+        </el-scrollbar>
       </el-main>
     </el-container>
   </el-container>
@@ -160,9 +165,8 @@ export default {
     width: 100%;
     height: 100%;
     border: none;
-    padding-right: 20px;
-    overflow-y: auto;
     .el-submenu {
+      height: 100%;
       border-left: 5px solid deepskyblue;
       border-top: 5px solid transparent;
       .el-menu-item {
@@ -175,5 +179,8 @@ export default {
       }
     }
   }
+}
+.el-scrollbar {
+  height: 100%;
 }
 </style>
