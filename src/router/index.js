@@ -18,7 +18,8 @@ const routes = [
       { path: '/categories', component: () => import('../view/Shop/Categories') },
       { path: '/params', component: () => import('../view/Shop/Params') },
       { path: '/orders', component: () => import('../view/Order/Orders') },
-      { path: '/reports', component: () => import('../view/Data/Reports') }
+      { path: '/reports', component: () => import('../view/Data/Reports') },
+      { path: '/goods/add', component: () => import('../view/Shop/Add') }
     ]
   }
 ]

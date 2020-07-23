@@ -4,7 +4,7 @@ import {
   Dropdown, DropdownItem, DropdownMenu, RadioButton, RadioGroup, Menu, Submenu,
   MenuItem, MenuItemGroup, Tooltip, Switch, Breadcrumb, BreadcrumbItem, Card, Table,
   TableColumn, Pagination, Dialog, Tag, Row, Col, MessageBox, Tree, Select, Option, Tabs,
-  Cascader, Alert, TabPane, Scrollbar
+  Cascader, Alert, TabPane, Scrollbar, Steps, Step, Checkbox, CheckboxGroup, Upload
 } from 'element-ui'
 
 Vue.use(Button)
@@ -44,5 +44,10 @@ Vue.use(Alert)
 Vue.use(Tabs)
 Vue.use(TabPane)
 Vue.use(Scrollbar)
+Vue.use(Steps)
+Vue.use(Step)
+Vue.use(Checkbox)
+Vue.use(CheckboxGroup)
+Vue.use(Upload)
 Vue.prototype.$message = Message
 Vue.prototype.$confirm = MessageBox

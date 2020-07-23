@@ -12,7 +12,7 @@
       <el-input placeholder="请输入登录名" class="input-with-select" v-model="queryInfo.query" @clear="getUserList" clearable>
         <el-button slot="append" icon="el-icon-search" @click="getUserList"></el-button>
       </el-input>
-      <el-button type="primary" plain class="addUser" @click="addDialogVisible = true">添加用户</el-button>
+      <el-button type="primary" plain @click="addDialogVisible = true">添加用户</el-button>
 
       <!-- 表格 -->
       <el-table  stripe style="width: 100%" :data="tableData">
@@ -426,6 +426,9 @@ export default {
   max-width: 300px;
   min-width: 200px;
   width: 40%;
+  + .el-button {
+    float: right;
+  }
 }
 .delInput {
   margin-top: 20px;
@@ -436,9 +439,6 @@ export default {
   font-weight: 700;
   font-size: 18px;
   background: #e4e4e4;
-}
-.addUser {
-  float: right;
 }
 .el-dialog div p {
   margin-bottom: 10px;

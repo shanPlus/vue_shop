@@ -60,4 +60,7 @@ section {
 .el-cascader-panel {
   height: 30vh;
 }
+.ql-container {
+  min-height: 300px;
+}
 </style>
