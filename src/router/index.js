@@ -19,7 +19,8 @@ const routes = [
       { path: '/params', component: () => import('../view/Shop/Params') },
       { path: '/orders', component: () => import('../view/Order/Orders') },
       { path: '/reports', component: () => import('../view/Data/Reports') },
-      { path: '/goods/add', component: () => import('../view/Shop/Add') }
+      { path: '/goods/add', component: () => import('../view/Shop/Add') },
+      { path: '/goods/edit', component: () => import('../view/Shop/Edit') }
     ]
   }
 ]

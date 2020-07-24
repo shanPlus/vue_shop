@@ -34,10 +34,10 @@
           <el-table-column label="操作">
             <template v-slot="scope">
               <el-tooltip content="编辑" placement="top" :enterable="false">
-                <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(scope.row.id)"></el-button>
+                <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEdit(scope.row)"></el-button>
               </el-tooltip>
               <el-tooltip content="删除" placement="top" :enterable="false">
-                <el-button type="danger" icon="el-icon-delete" size="mini" @click="showDelDialog(scope.row.id)"></el-button>
+                <el-button type="danger" icon="el-icon-delete" size="mini" @click="showDelDialog(scope.row)"></el-button>
               </el-tooltip>
             </template>
           </el-table-column>
@@ -53,7 +53,6 @@
           :total="total">
         </el-pagination>
       </el-card>
-      <!-- 编辑商品Dialog弹框 -->
     </div>
 </template>
 
@@ -88,14 +87,14 @@ export default {
      */
     async getShopList () {
       const { data: res } = await this.$http.get('goods', { params: this.queryInfo })
-      console.log(res)
+      // console.log(res)
       if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
       res.data.goods.forEach(item => {
         item.add_time = new Date(item.add_time).toLocaleString()
       })
       this.tableData = res.data.goods
       this.total = res.data.total
-      console.log(this.tableData)
+      // console.log(this.tableData)
     },
     /**
      *   每页显示多少条数据被更改就会被触发
@@ -116,19 +115,30 @@ export default {
     async goAddPage () {
       this.$router.push('/goods/add')
     },
-    async showEditDialog () {},
+    /**
+     * 商品编辑按钮被触发
+     */
+    async showEdit (value) {
+      this.$router.push({ path: '/goods/edit', query: { id: value.goods_id, name: value.goods_name } })
+    },
     /**
      * 根据商品id删除商品
      * @param {object} value 一个商品的所有信息
      */
     async showDelDialog (value) {
+      // console.log(value)
       const result = await this.$confirm('此操作将永久删除该商品,是否继续?', '提示', {
         configButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).catch(err => err)
-      if (result !== confirm) return this.$message.error('取消删除商品')
-      const { data: res } = await this.$http.delete('goods' + value.goods_id)
+      // console.log(result)
+      if (result !== 'confirm') return this.$message.error('取消删除商品')
+      // console.log(value.goods_id)
+      const { data: res } = await this.$http.delete('goods/' + value.goods_id, {
+        params: { id: value.goods_name }
+      })
+      // console.log(res)
       if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
       this.$message.success(res.meta.msg)
       this.getShopList()

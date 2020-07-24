@@ -136,7 +136,7 @@ export default {
     // 自定义校验规则, value 用户输入的值
     const checkEmail = (rule, value, callback) => {
       const regEmail = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/
-      console.log(regEmail.test(value))
+      // console.log(regEmail.test(value))
       if (regEmail.test(value)) {
         return callback()
       }
@@ -144,7 +144,7 @@ export default {
     }
     const checkMobile = (rule, value, callback) => {
       const regMobile = /^(13[0-9]|14[5|7]|15[0|1|2|3|4|5|6|7|8|9]|18[0|1|2|3|5|6|7|8|9])\d{8}$/
-      console.log(regMobile.test(value))
+      // console.log(regMobile.test(value))
       if (regMobile.test(value)) {
         return callback()
       }
@@ -269,7 +269,7 @@ export default {
     async userStateChange (data) {
       // console.log(data)
       const { data: res } = await this.$http.put(`users/${data.id}/state/${data.mg_state}`)
-      console.log(res)
+      // console.log(res)
       if (res.meta.status !== 200) {
         data.mg_state = !data.mg_state
         return this.$message.error(res.meta.msg)
@@ -295,7 +295,7 @@ export default {
         if (!valid) return
         // 发起添加请求
         const { data: res } = await this.$http.post('/users', this.addUserInfo)
-        console.log(res)
+        // console.log(res)
         if (res.meta.status === 201) {
           this.addDialogVisible = false
           this.getUserList()
@@ -311,9 +311,9 @@ export default {
      * @returns {Promise<ElMessageComponent>}
      */
     async showEditDialog (id) {
-      console.log(id)
+      // console.log(id)
       const { data: res } = await this.$http.get('users/' + id)
-      console.log(res)
+      // console.log(res)
       if (res.meta.status !== 200) return this.$message.error('查询信息失败')
       this.editUserInfo = res.data
       this.editDialogVisible = true
@@ -330,7 +330,7 @@ export default {
         // 发起修改用户信息请求
         const info = this.editUserInfo
         const { data: res } = await this.$http.put('users/' + info.id, { email: info.email, mobile: info.mobile })
-        console.log(res)
+        // console.log(res)
         if (res.meta.status !== 200) return this.$message.error('更新信息失败')
         this.editDialogVisible = false
         this.getUserList()
@@ -389,7 +389,7 @@ export default {
       const { data: res } = await this.$http.get('roles')
       if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
       this.rolesList = res.data
-      console.log(this.rolesList)
+      // console.log(this.rolesList)
       this.setDialogVisible = true
     },
     /**

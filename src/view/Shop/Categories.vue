@@ -40,9 +40,9 @@
             <el-tag type="warning" v-else-if="scope.row.cat_level === 2">三级</el-tag>
           </template>
           <!-- 操作一列 -->
-          <template v-slot:opt>
-            <el-button type="primary" icon="el-icon-edit" size="mini">编辑</el-button>
-            <el-button type="danger" icon="el-icon-search" size="mini">删除</el-button>
+          <template v-slot:opt="scope">
+            <el-button type="primary" icon="el-icon-edit" size="mini" @click="editShowDialog(scope.row)">编辑</el-button>
+            <el-button type="danger" icon="el-icon-search" size="mini" @click="delCateGories(scope.row)">删除</el-button>
           </template>
         </zk-table>
         <!-- 分页 -->
@@ -63,7 +63,7 @@
         @close="addCateDialogClosed">
         <el-form :model="addCateForm" :rules="addCateFormRules" ref="AddCateFormRes">
           <el-form-item label="添加分类" prop="cat_name">
-            <el-input v-model="addCateForm.cat_name"></el-input>
+            <el-input v-model="addCateForm.cat_name" clearable></el-input>
           </el-form-item>
           <el-form-item label="父级分类">
             <!-- option: 数据源 -->
@@ -87,6 +87,20 @@
           <el-button type="primary" @click="showCateDialog">确 定</el-button>
         </span>
       </el-dialog>
+    <el-dialog
+      title="编辑分类名称"
+      :visible.sync="editCateDialogVisible"
+      @close="editCateDialogClosed">
+      <el-form :model="editCateForm" :rules="editCateFormRules" ref="editCateFormRef">
+        <el-form-item label="添加分类" prop="cat_name">
+          <el-input v-model="editCateForm.cat_name" clearable></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+          <el-button @click="editCateDialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="editCateDialog">确 定</el-button>
+        </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -155,7 +169,19 @@ export default {
       // 添加分类，父级分类存储信息
       parentCateList: [],
       // 保存选中父级分类的ID数组
-      selectedKeys: []
+      selectedKeys: [],
+      // 控制编辑分类弹框
+      editCateDialogVisible: false,
+      // 编辑表单内容绑定
+      editCateForm: {
+        cat_name: ''
+      },
+      // 编辑分类表单验证对象
+      editCateFormRules: {
+        cat_name: [
+          { required: true, message: '请输入分类名', trigger: 'blur' }
+        ]
+      }
     }
   },
   /**
@@ -219,8 +245,8 @@ export default {
       this.$refs.AddCateFormRes.validate(async valid => {
         if (!valid) return
         const { data: res } = await this.$http.post('categories', this.addCateForm)
-        console.log(this.addCateForm)
-        console.log(res)
+        // console.log(this.addCateForm)
+        // console.log(res)
         if (res.meta.status !== 201) {
           return this.$message.error(res.meta.msg)
         }
@@ -238,7 +264,7 @@ export default {
      *    - 属于第几级分类: 看返回的长度,长度为1,那么是二级分类, 长度为2,那么是三级分类
      */
     parentCateChanged () {
-      console.log(this.selectedKeys)
+      // console.log(this.selectedKeys)
       // 父级分类被选中
       if (this.selectedKeys.length > 0) {
         // 将要添加对象的名称
@@ -264,6 +290,59 @@ export default {
       this.selectedKeys = []
       this.addCateForm.cat_pid = 0
       this.addCateForm.cat_pid = 0
+    },
+    /**
+     * 删除该分类
+     */
+    async delCateGories (value) {
+      const result = await this.$confirm('确定删除该分类, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch(err => err)
+      // console.log(result)
+      if (result !== 'confirm') return
+      // console.log(value)
+      const { data: res } = await this.$http.delete('categories/' + value.cat_id)
+      // console.log(res)
+      if (res.meta.status !== 200) {
+        return this.$message.error(res.meta.msg)
+      }
+      this.getCateList()
+    },
+    /**
+     * 商品分类编辑按钮被触发
+     */
+    async editShowDialog (value) {
+      const { data: res } = await this.$http.get('categories/' + value.cat_id)
+      if (res.meta.status !== 200) {
+        return this.$message.error(res.meta.msg)
+      }
+      this.editCateForm = res.data
+      // console.log(this.editCateForm)
+      this.editCateDialogVisible = true
+    },
+    /**
+     * 编辑弹框被点击确定
+     */
+    editCateDialog () {
+      this.$refs.editCateFormRef.validate(async valid => {
+        if (!valid) return
+        // console.log(this.editCateForm.cat_name)
+        const { data: res } = await this.$http.put('categories/' + this.editCateForm.cat_id, { cat_name: this.editCateForm.cat_name })
+        // console.log(res)
+        if (res.meta.status !== 200) {
+          return this.$message.error(res.meta.msg)
+        }
+        this.editCateDialogVisible = false
+        this.getCateList()
+      })
+    },
+    /**
+     * 编辑表单弹框被关闭
+     */
+    editCateDialogClosed () {
+      this.$refs.editCateFormRef.resetFields()
     }
   }
 }

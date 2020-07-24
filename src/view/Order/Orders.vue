@@ -9,7 +9,7 @@
     <!-- 卡片视图-->
     <el-card>
       <!-- 搜索框与添加用户按钮 -->
-      <el-input placeholder="请输入登录名" class="input-with-select" v-model="queryInfo.query" @clear="getOrdersList" clearable>
+      <el-input placeholder="请输入订单号" class="input-with-select" v-model="queryInfo.query" @clear="getOrdersList" clearable>
         <el-button slot="append" icon="el-icon-search" @click="getOrdersList"></el-button>
       </el-input>
       <el-table  stripe style="width: 100%" :data="tableData">
@@ -143,7 +143,7 @@ export default {
      */
     async getOrdersList () {
       const { data: res } = await this.$http.get('orders', { params: this.queryInfo })
-      console.log(res)
+      // console.log(res)
       if (res.meta.status !== 200) {
         return this.$message.error(res.meta.msg)
       }
@@ -185,12 +185,12 @@ export default {
      */
     async showProgressBox () {
       const { data: res } = await this.$http.get('kuaidi/804909574412544580')
-      console.log(res)
+      // console.log(res)
       if (res.meta.status !== 200) {
         return this.$message.error(res.meta.msg)
       }
       this.progressInfo = res.data
-      console.log(this.progressInfo)
+      // console.log(this.progressInfo)
       this.progressVisible = true
     }
   }

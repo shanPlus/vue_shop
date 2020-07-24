@@ -5,12 +5,12 @@
       <el-breadcrumb-item>首页</el-breadcrumb-item>
       <el-breadcrumb-item>商品管理</el-breadcrumb-item>
       <el-breadcrumb-item>商品列表</el-breadcrumb-item>
-      <el-breadcrumb-item>添加商品</el-breadcrumb-item>
+      <el-breadcrumb-item>编辑商品</el-breadcrumb-item>
     </el-breadcrumb>
     <!-- 卡片视图区域 -->
     <el-card>
       <!-- 提示区域 -->
-      <el-alert title="添加商品信息" type="info" center show-icon :closable="false"></el-alert>
+      <el-alert title="编辑商品信息" type="info" center show-icon :closable="false"></el-alert>
       <!-- 进度条 -->
       <el-steps :space="200" :active="activeIndex-0" finish-status="success" align-center>
         <el-step title="基本信息"></el-step>
@@ -20,25 +20,25 @@
         <el-step title="商品内容"></el-step>
         <el-step title="完成"></el-step>
       </el-steps>
-      <el-form :model="addRuleForm" :rules="addRules" ref="AddRef" label-position="top">
+      <el-form :model="editRuleForm" :rules="editRules" ref="editRef" label-position="top">
         <!-- 左侧table栏切换-->
         <el-tabs tab-position="left" v-model="activeIndex" :before-leave="activeHandle" @tab-click="tabClicked">
           <el-tab-pane label="基本信息" name="0">
             <el-form-item label="商品名称" prop="goods_name">
-              <el-input v-model="addRuleForm.goods_name" clearable></el-input>
+              <el-input v-model="editRuleForm.goods_name" clearable></el-input>
             </el-form-item>
             <el-form-item label="商品价格" prop="goods_price">
-              <el-input v-model.number="addRuleForm.goods_price" clearable></el-input>
+              <el-input v-model.number="editRuleForm.goods_price" clearable></el-input>
             </el-form-item>
             <el-form-item label="商品重量" prop="goods_weight">
-              <el-input v-model.number="addRuleForm.goods_weight" clearable></el-input>
+              <el-input v-model.number="editRuleForm.goods_weight" clearable></el-input>
             </el-form-item>
             <el-form-item label="商品数量" prop="goods_number">
-              <el-input v-model.number="addRuleForm.goods_number" clearable></el-input>
+              <el-input v-model.number="editRuleForm.goods_number" clearable></el-input>
             </el-form-item>
             <el-form-item label="商品分类" prop="goods_cat">
               <el-cascader
-                v-model="addRuleForm.goods_cat"
+                v-model="editRuleForm.goods_cat"
                 :options="shopList"
                 :props="{
                   expandTrigger: 'hover',
@@ -72,15 +72,17 @@
               :on-preview="handlePreview"
               :on-remove="handleRemove"
               list-type="picture"
+              :file-list="smallImg"
+              :name="smallImg.name"
               :on-success="handleSuccess">
               <el-button size="small" type="primary">点击上传</el-button>
             </el-upload>
           </el-tab-pane>
           <el-tab-pane label="商品内容" name="4">
             <!-- 富文本编辑器组件 -->
-            <quill-editor v-model="addRuleForm.goods_introduce"></quill-editor>
+            <quill-editor v-model="editRuleForm.goods_introduce"></quill-editor>
             <!-- 添加商品按钮-->
-            <el-button type="primary" plain class="btnAdd" @click="addShop">添加商品分类</el-button>
+            <el-button type="primary" plain class="btnEdit" @click="editShop">确定编辑商品</el-button>
           </el-tab-pane>
         </el-tabs>
       </el-form>
@@ -96,13 +98,13 @@
 // 导入js工具库， 用来对象深拷贝
 import _ from 'lodash'
 export default {
-  name: 'Add.vue',
+  name: 'Edit.vue',
   data () {
     return {
       // 切换上面进度条与table栏切换
       activeIndex: '0',
-      // 添加表单里面双向数据绑定这里面
-      addRuleForm: {
+      // 编辑表单里面双向数据绑定这里面
+      editRuleForm: {
         // 商品名称
         goods_name: '',
         // 商品价格
@@ -119,7 +121,7 @@ export default {
         goods_introduce: '',
         attrs: []
       },
-      addRules: {
+      editRules: {
         goods_name: [
           { required: true, message: '请输入商品名称', trigger: 'blur' }
         ],
@@ -144,6 +146,8 @@ export default {
       onlyTableData: [],
       // 图片上传链接
       imgUrl: 'http://127.0.0.1:8888/api/private/v1/upload',
+      // 已经存在的图片
+      smallImg: [],
       // 图片上传组件的headers请求对象
       headerObj: {
         Authorization: window.sessionStorage.getItem('token')
@@ -159,24 +163,37 @@ export default {
   },
   methods: {
     /**
-     * 获取商品的所有分类
+     * 获取商品的所有分类与商品信息
      *
      * @returns {Promise<void>}
      */
     async getShopCat () {
-      const { data: res } = await this.$http.get('categories')
-      // console.log(res)
-      if (res.meta.status !== 200) {
+      // 获取该分类的id
+      const { id, name } = this.$route.query
+      const { data: response } = await this.$http.get('goods/' + id, {
+        params: { id: name }
+      })
+      let arr = response.data.goods_cat.split(',')
+      arr = arr.map(Number)
+      // console.log(response)
+      // console.log(obj)
+      // 根据id查询商品分类
+      response.data.goods_cat = arr
+      Object.assign(this.editRuleForm, response.data)
+      // 获取级联选择框里面的参数
+      const { data: r } = await this.$http.get('categories')
+      // console.log(r)
+      if (r.meta.status !== 200) {
         return this.$message.error('获取商品分类失败')
       }
-      this.shopList = res.data
+      this.shopList = r.data
     },
     /**
      * 切换标签之前的钩子,若返回false或者返回promise且被reject,则阻止借还
      */
     activeHandle (active, old) {
       // console.log(active, old)
-      if (old === '0' && this.addRuleForm.goods_cat.length !== 3) {
+      if (old === '0' && this.editRuleForm.goods_cat.length !== 3) {
         this.$message.error('请选择商品分类')
         // 阻止切换
         return false
@@ -187,10 +204,11 @@ export default {
      */
     cascaderChange () {
       // console.log(this.shopValue)
-      if (this.addRuleForm.goods_cat.length !== 3) {
+      if (this.editRuleForm.goods_cat.length !== 3) {
         this.$message.error('请选择三级分类')
         this.editRuleForm.goods_cat = []
       }
+      // console.log(this.editRuleForm.goods_cat)
     },
     /**
      * tab栏选项被选中就会触发
@@ -225,6 +243,19 @@ export default {
         }
         this.onlyTableData = res.data
         // console.log(this.onlyTableData)
+      } else if (this.activeIndex === '3') {
+        // console.log(this.smallImg)
+        this.smallImg = []
+        this.editRuleForm.pics.forEach((item) => {
+          if (item.goods_id) {
+            return this.smallImg.push({ name: item.pics_sma, url: item.pics_sma_url })
+          } else {
+            return this.smallImg.push({ name: item.pic, url: 'http://127.0.0.1:8888/' + item.pic })
+          }
+        })
+        // console.log(this.smallImg)
+        // console.log(this.editRuleForm.pics)
+        // console.log(this.smallImg)
       }
     },
     /**
@@ -232,6 +263,11 @@ export default {
      *  file: 点击上传图片的名字的时候，会返回上传图片的信息
      */
     handlePreview (file) {
+      if (file.status === 'success') {
+        this.previewPath = file.url
+        this.previewVisible = true
+        return false
+      }
       this.previewPath = file.response.data.url
       this.previewVisible = true
     },
@@ -240,40 +276,52 @@ export default {
      *  file: 将要被移除的信息
      */
     handleRemove (file) {
+      // console.log(file)
+      if (file.status === 'success') {
+        const index = this.editRuleForm.pics.findIndex(item => {
+          return item.pics_sma === file.name
+        })
+        this.editRuleForm.pics.splice(index, 1)
+        this.smallImg.splice(index, 1)
+        // console.log(index)
+        return false
+      }
       const filePath = file.response.data.tmp_path
-      const i = this.addRuleForm.pics.findIndex(x => x.pic === filePath)
-      this.addRuleForm.pics.splice(i, 1)
-      // console.log(this.addRuleForm.pics)
+      const i = this.editRuleForm.pics.findIndex(x => x.pic === filePath)
+      this.editRuleForm.pics.splice(i, 1)
+      // console.log(this.editRuleForm.pics)
     },
     /**
      * 监听图片上传成功时间
      *    - response 服务器响应回来的数据
      */
     handleSuccess (response) {
-      console.log(response)
+      // console.log(response)
       // 拼接得到一个图片信息对象
       const picinfo = { pic: response.data.tmp_path }
       // 2. 将图片信息对象， push到数组中
-      this.addRuleForm.pics.push(picinfo)
-      // console.log(this.addRuleForm.pics)
+      this.editRuleForm.pics.push(picinfo)
+      // this.smallImg.push({ name: response.data.tmp_path, url: response.data.url })
+      // console.log(this.editRuleForm.pics)
     },
     /**
      * 最后添加整个商品
      *    - 预验证
      */
-    addShop () {
-      this.$refs.AddRef.validate(async valid => {
+    editShop () {
+      // console.log('1111')
+      this.$refs.editRef.validate(async valid => {
         if (!valid) return this.$message.error('请填写必要的表单信息')
         // 执行添加的业务逻辑, _.cloneDeep深拷贝
-        const addRuleFormCopy = _.cloneDeep(this.addRuleForm)
-        addRuleFormCopy.goods_cat = addRuleFormCopy.goods_cat.join()
+        const editRuleFormCopy = _.cloneDeep(this.editRuleForm)
+        editRuleFormCopy.goods_cat = editRuleFormCopy.goods_cat.join()
         // // 处理动态参数
         this.manyTableData.forEach(item => {
           const newInfo = {
             attr_id: item.attr_id,
             attr_value: item.attr_vals.join(' ')
           }
-          this.addRuleForm.attrs.push(newInfo)
+          this.editRuleForm.attrs.push(newInfo)
         })
         // 处理静态属性
         this.onlyTableData.forEach(item => {
@@ -281,12 +329,14 @@ export default {
             attr_id: item.attr_id,
             attr_value: item.attr_vals
           }
-          this.addRuleForm.attrs.push(newInfo)
+          this.editRuleForm.attrs.push(newInfo)
         })
-        addRuleFormCopy.attr = this.addRuleForm.attrs
-        const { data: res } = await this.$http.post('goods', addRuleFormCopy)
+        editRuleFormCopy.attr = this.editRuleForm.attrs
+        const { id } = this.$route.query
+        const { data: res } = await this.$http.put('goods/' + id, editRuleFormCopy)
+        // console.log('1111')
         // console.log(res)
-        if (res.meta.status !== 201) {
+        if (res.meta.status !== 200) {
           return this.$message.error(res.meta.msg)
         }
         this.$message.success(res.meta.msg)
@@ -300,8 +350,8 @@ export default {
      * @returns {null|*}
      */
     cateId () {
-      if (this.addRuleForm.goods_cat.length === 3) {
-        return this.addRuleForm.goods_cat[2]
+      if (this.editRuleForm.goods_cat.length === 3) {
+        return this.editRuleForm.goods_cat[2]
       }
       return null
     }
@@ -313,7 +363,7 @@ export default {
 .previewImg {
   width: 100%;
 }
-.btnAdd {
+.btnEdit {
   margin-top: 15px;
 }
 </style>

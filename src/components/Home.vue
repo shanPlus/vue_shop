@@ -3,7 +3,7 @@
     <el-header>
       <div class="header-logo">
         <img src="../assets/logo.png" alt="头像" title="头像">
-        <h1>Vue后台管理系统</h1>
+        <h1>商城后台管理系统</h1>
       </div>
       <div class="header-info">
         <el-dropdown>

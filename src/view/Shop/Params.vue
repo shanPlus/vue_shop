@@ -57,6 +57,7 @@
                     v-model.trim="scope.row.inputValue"
                     ref="saveTagInput"
                     size="small"
+                    clearable
                     @keyup.enter.native = "handleInputConfirm(scope.row)"
                     @blur="handleInputConfirm(scope.row)">
                   </el-input>
@@ -108,6 +109,7 @@
                     v-model.trim="scope.row.inputValue"
                     ref="saveTagInput"
                     size="small"
+                    clearable
                     @keyup.enter.native = "handleInputConfirm(scope.row)"
                     @blur="handleInputConfirm(scope.row)">
                   </el-input>
@@ -145,7 +147,7 @@
     <el-dialog :title="'添加'+dialogText" :visible.sync="addShowDialogVisible" @close="addDialogClose">
       <el-form :model="addDialogInput" :rules="addDialogRules" ref="addDialogRef">
         <el-form-item :label="dialogText" prop="attr_name">
-          <el-input v-model="addDialogInput.attr_name"></el-input>
+          <el-input v-model="addDialogInput.attr_name" clearable></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -157,7 +159,7 @@
     <el-dialog :title="'修改'+dialogText" :visible.sync="editShowDialogVisible" @close="editDialogClose">
       <el-form :model="editDialogInput" :rules="editDialogRules" ref="editDialogRef">
         <el-form-item :label="dialogText" prop="attr_name">
-          <el-input v-model="editDialogInput.attr_name"></el-input>
+          <el-input v-model="editDialogInput.attr_name" clearable></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -345,7 +347,7 @@ export default {
         type: 'warning'
       }).catch(err => err)
       // console.log(result)
-      if (result === confirm) {
+      if (result !== 'confirm') {
         return this.$message.error('取消删除')
       }
       // console.log(value)
