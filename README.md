@@ -1,5 +1,9 @@
 # vue-shop
 
+## 后端地址
+
+https://github.com/shanPlus/vue-api-server
+
 ## Project setup
 ```
 yarn install
